@@ -1,0 +1,68 @@
+const products = [
+  {
+    id: 1,
+    name: "رژ لب مات مخملی",
+    category: "لب",
+    price: 185000,
+    image: "/pexels-emanuel-turbuc-14839823 (1).jpg",
+    description: "رژ لب مات با ماندگاری بالا، بدون خشکی روی لب",
+  },
+  {
+    id: 2,
+    name: "کرم پودر فول کاوریج",
+    category: "پوست",
+    price: 320000,
+    image: "/pexels-emanuel-turbuc-14839823 (1).jpg",
+    description: "پوشش کامل، فرمول سبک و غیرچرب، مناسب پوست‌های چرب",
+  },
+  {
+    id: 3,
+    name: "ریمل حجم‌دهنده",
+    category: "چشم",
+    price: 210000,
+    image: "/pexels-emanuel-turbuc-14839823 (1).jpg",
+    description: "حجم و بلندی مژه‌ها بدون کلامپ شدن",
+  },
+  {
+    id: 4,
+    name: "پالت سایه چشم ۹ رنگ",
+    category: "چشم",
+    price: 450000,
+    image: "/pexels-emanuel-turbuc-14839823 (1).jpg",
+    description: "ترکیب رنگ‌های نئود و برنزه، مناسب آرایش روزمره و شب",
+  },
+  {
+    id: 5,
+    name: "رژگونه هایلایتردار",
+    category: "صورت",
+    price: 175000,
+    image: "/pexels-emanuel-turbuc-14839823 (1).jpg",
+    description: "رنگدهی طبیعی با درخشش ملایم",
+  },
+  {
+    id: 6,
+    name: "خط چشم مایع ضدآب",
+    category: "چشم",
+    price: 140000,
+    image: "/pexels-emanuel-turbuc-14839823 (1).jpg",
+    description: "نوک باریک برای خطوط دقیق، مقاوم در برابر آب",
+  },
+  {
+    id: 7,
+    name: "کرم مرطوب‌کننده روزانه",
+    category: "پوست",
+    price: 260000,
+    image: "/pexels-emanuel-turbuc-14839823 (1).jpg",
+    description: "با SPF 30، مناسب استفاده روزانه زیر آرایش",
+  },
+  {
+    id: 8,
+    name: "ادکلن زنانه گلی",
+    category: "عطر",
+    price: 590000,
+    image: "/pexels-emanuel-turbuc-14839823 (1).jpg",
+    description: "رایحه‌ی ملایم و ماندگار با نت‌های گل رز و یاسمن",
+  },
+];
+
+export default products;

@@ -1,0 +1,17 @@
+body {
+    width: 101%;
+    height: 101%;
+    margin: -8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+    font-style: italic;
+    font-size: clamp(16px, 5vw, 30px);
+    color: snow;
+    /*background-color: white;*/
+    background-image: url(/super.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #2b2a26;
+}
