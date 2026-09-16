@@ -210,8 +210,6 @@ app.post(
     console.log("RESET LINK: ", resetLink);
     await sendResetEmail(email, resetLink);
 
-    console.log(" I'm on test branch");
-
     res.json({
       success: true,
       message: "If this email exists, a reset link has been sent.",
