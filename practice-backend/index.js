@@ -210,7 +210,7 @@ app.post(
     console.log("RESET LINK: ", resetLink);
     await sendResetEmail(email, resetLink);
 
-    console.log(" I'm on test branchT");
+    console.log(" I'm the king");
 
     res.json({
       success: true,
