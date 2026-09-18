@@ -25,3 +25,46 @@
     color: green;
     font-weight: bold;
 }
+
+.div-btn {
+    width: 80%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.div-btn button {
+    cursor: pointer;
+    background-color: #6bee6b;
+    height: 30px;
+    width: auto;
+    border-radius: 7px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #47ca47;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: .3s;
+    z-index: 1;
+}
+
+.btn:hover::before {
+    transform: scaleX(1);
+}
+
+.btn span {
+    position: relative;
+    z-index: 2;
+}
+
+.btn:hover span {
+    color: white;
+}

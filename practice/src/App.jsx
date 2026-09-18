@@ -7,6 +7,7 @@ import {
   ForgotPassword,
   ResetPassword,
   Dashboard,
+  ChangePassword,
 } from "./components";
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -25,6 +26,7 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/change-password" element={<ChangePassword />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </Layots>

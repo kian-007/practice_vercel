@@ -8,3 +8,4 @@ export { default as Register } from "../pages/register/register";
 export { default as Dashboard } from "../pages/dashboard/dashboard";
 export { default as ForgotPassword } from "../pages/forgotpassword/forgotPassword";
 export { default as ResetPassword } from "../pages/resetPassword/resetPassword";
+export { default as ChangePassword } from "../pages/changePassword/changePassword";

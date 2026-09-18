@@ -53,6 +53,16 @@ const Dashboard = () => {
         )}
       </div>
 
+      <div className="div-btn">
+        <button
+          className="btn"
+          onClick={() => navigate("/change-password")}
+          style={{ alignSelf: "flex-end" }}
+        >
+          <span>Change password</span>
+        </button>
+      </div>
+
       <div className="sessions">
         <h3>دستگاه‌های فعال</h3>
         {sessionsLoading ? (

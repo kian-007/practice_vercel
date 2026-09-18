@@ -19,7 +19,7 @@
         border-radius: 50PX;
         transition: .3s;
         text-align: center;
-        z-index: 1;
+        z-index: 3;
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
