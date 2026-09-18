@@ -14,6 +14,7 @@ const Login = () => {
   const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e) => {
+    setMessage("loading...");
     e.preventDefault();
     if (loading) setMessage("Loading...");
 

@@ -56,7 +56,7 @@ function requireRole(role) {
     next();
   };
 }
-
+//-------- validation -----------
 function handleValidation(req, res, next) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -77,6 +77,15 @@ const registerValidation = [
 const loginValidation = [
   body("email").notEmpty().withMessage("Email is required"),
   body("password").notEmpty().withMessage("Password is required"),
+];
+
+const changePasswordValidation = [
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("Current password is required"),
+  body("newPassword")
+    .isLength({ min: 6 })
+    .withMessage("New password must be at least 6 characters"),
 ];
 
 function asyncHandler(fn) {
@@ -166,6 +175,57 @@ app.post(
   }),
 );
 
+app.patch(
+  "/change-password",
+  requireAuth,
+  changePasswordValidation,
+  handleValidation,
+  asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    // پیدا کردن کاربر
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+      req.user.email,
+    ]);
+
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // بررسی رمز فعلی
+    const isPasswordCorrect = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    // Hash کردن رمز جدید
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // تغییر رمز در دیتابیس
+    await pool.query("UPDATE users SET password = $1 WHERE id = $2", [
+      hashedPassword,
+      user.id,
+    ]);
+
+    res.json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  }),
+);
+
 app.post(
   "/forgot-password",
   asyncHandler(async (req, res) => {
@@ -209,8 +269,6 @@ app.post(
 
     console.log("RESET LINK: ", resetLink);
     await sendResetEmail(email, resetLink);
-
-    console.log(" I'm the king");
 
     res.json({
       success: true,
@@ -260,6 +318,24 @@ app.post(
       });
     }
     // 4. Hash کردن password جدید
+    const userResult = await pool.query(
+      `SELECT password FROM users WHERE id = $1`,
+      [resetToken.user_id],
+    );
+    const user = userResult.rows[0];
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "user not found" });
+    }
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+
+    if (isSamePassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from your last password",
+      });
+    }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     // 5. تغییر password
     await pool.query(

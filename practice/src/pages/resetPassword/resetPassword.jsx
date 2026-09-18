@@ -71,7 +71,7 @@ function ResetPassword() {
       // بعد از 2 ثانیه برگرد Login
       setTimeout(() => {
         navigate("/login");
-      }, 2000);
+      }, 750);
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
