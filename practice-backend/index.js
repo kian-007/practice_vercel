@@ -184,9 +184,10 @@ app.patch(
     const { currentPassword, newPassword } = req.body;
 
     // پیدا کردن کاربر
-    const result = await pool.query("SELECT * FROM users WHERE email = $1", [
-      req.user.email,
-    ]);
+    const result = await pool.query(
+      "SELECT id, password  FROM users WHERE email = $1",
+      [req.user.email],
+    );
 
     const user = result.rows[0];
 
@@ -207,6 +208,14 @@ app.patch(
       return res.status(401).json({
         success: false,
         message: "Current password is incorrect",
+      });
+    }
+
+    // رمز جدید نباید با رمز فعلی یکی باشد
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from your current password",
       });
     }
 
