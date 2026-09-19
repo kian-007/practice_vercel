@@ -1,4 +1,4 @@
-const { sendResetEmail } = require("./email");
+const { sendResetEmail } = require("./email"); //require('nodemailer')
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -7,6 +7,7 @@ const { body, validationResult } = require("express-validator");
 const { Pool } = require("pg");
 const knexFactory = require("knex");
 const bcrypt = require("bcryptjs");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 
@@ -56,6 +57,19 @@ function requireRole(role) {
     next();
   };
 }
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+
+  message: {
+    success: false,
+    message: "Too many login attempts. Please try again later.",
+  },
+
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+});
 //-------- validation -----------
 function handleValidation(req, res, next) {
   const errors = validationResult(req);
@@ -131,6 +145,7 @@ app.post(
 
 app.post(
   "/login",
+  loginLimiter,
   loginValidation,
   handleValidation,
   asyncHandler(async (req, res) => {
