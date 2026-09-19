@@ -8,7 +8,6 @@ const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [message, setMessage] = useState("Change password");
-  const [error, setError] = useState("");
   const [success, setSuccess] = useState(undefined);
   const [loading, setLoading] = useState(undefined);
   const { logout } = useAuth();
@@ -16,18 +15,16 @@ const ChangePassword = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    console.log("start: ");
     e.preventDefault();
-    setError("");
     setMessage("");
 
     if (newPassword === currentPassword) {
       setSuccess(false);
-      setError("Passwords must be defferent.");
+      setMessage("Passwords must be defferent.");
       return;
     }
     if (newPassword.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setMessage("Password must be at least 6 characters.");
       return;
     }
     setLoading(true);
@@ -47,15 +44,13 @@ const ChangePassword = () => {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setError(data.message || "Password change failed");
+        setMessage(data.message || "Password change failed");
         setSuccess(false);
-        setMessage(data.message);
         return;
       }
       setSuccess(true);
       // موفق شد
       setMessage(data.message);
-      console.log("data.message: ", message);
 
       setTimeout(() => {
         logout();
@@ -64,10 +59,9 @@ const ChangePassword = () => {
     } catch (err) {
       setSuccess(false);
       console.error(err);
-      setError("Something went wrong. Please try again.");
+      setMessage("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
-      console.log("finally: ", message);
     }
   };
 
@@ -84,7 +78,6 @@ const ChangePassword = () => {
           }
         >
           {message && <p>{message}</p>}
-          {error && <p>{error}</p>}
         </span>
         <form onSubmit={handleSubmit}>
           <input
