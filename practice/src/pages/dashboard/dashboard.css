@@ -35,7 +35,7 @@
 
 .div-btn button {
     cursor: pointer;
-    background-color: #6bee6b;
+    background-color: #ffb347;
     height: 30px;
     width: auto;
     border-radius: 7px;
@@ -51,7 +51,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    background-color: #47ca47;
+    background-color: orange;
     transform: scaleX(0);
     transform-origin: left;
     transition: .3s;
