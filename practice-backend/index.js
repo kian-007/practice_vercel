@@ -163,13 +163,13 @@ app.post(
       res.cookie("token", accessToken, {
         httpOnly: true,
         sameSite: "lax",
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         maxAge: 15 * 60 * 1000,
       });
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         sameSite: "lax",
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       res.json({ success: true, message: "successful login :D" });
@@ -506,13 +506,13 @@ app.post(
     res.cookie("token", newAccessToken, {
       httpOnly: true,
       sameSite: "lax",
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 15 * 60 * 1000,
     });
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       sameSite: "lax",
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.json({ success: true });
