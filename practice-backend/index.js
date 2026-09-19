@@ -100,6 +100,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/", (req, res) => {
+  res.json({ message: "API is running" });
+});
+
 app.post(
   "/register",
   registerValidation,
