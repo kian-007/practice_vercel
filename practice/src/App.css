@@ -50,6 +50,9 @@
     div:has(> .register) {
         width: 70%
     }
+    div:has(> .changePass) {
+        width: 70%
+    }
     body {
         background-image: none;
     }
