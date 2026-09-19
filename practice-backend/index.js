@@ -368,23 +368,41 @@ app.post(
       });
     }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    // 5. تغییر password
-    await pool.query(
-      `
+
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      // 5. تغییر password
+      const updateResult = await client.query(
+        `
       UPDATE users
       SET password = $1
       WHERE id = $2
       `,
-      [hashedPassword, resetToken.user_id],
-    );
-    // 6. حذف token
-    await pool.query(
-      `
+        [hashedPassword, resetToken.user_id],
+      );
+      if (updateResult.rowCount !== 1) {
+        throw new Error("User password was not updated");
+      }
+      // 6. حذف token
+      const deleteResult = await client.query(
+        `
       DELETE FROM password_reset_tokens
       WHERE id = $1
       `,
-      [resetToken.id],
-    );
+        [resetToken.id],
+      );
+      if (deleteResult.rowCount !== 1) {
+        throw new Error("Reset token was not deleted");
+      }
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
 
     res.json({
       success: true,
