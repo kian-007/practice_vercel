@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { userEmail, userRole, isLoggedIn, loading } = useAuth();
+  const { userEmail, userRole, isLoggedIn, loading, logout } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
 
@@ -41,6 +41,14 @@ const Dashboard = () => {
     loadSessions();
   };
 
+  const handleLogoutAll = async () => {
+    const confirmed = window.confirm("همه دستگاه ها از حساب خارج بشن؟");
+    if (!confirmed) return;
+
+    await fetchWithAuth(`${API_URL}/logout-all`, { method: "POST" });
+    logout();
+  };
+
   if (loading) return <p>loading...</p>;
 
   return (
@@ -60,6 +68,15 @@ const Dashboard = () => {
           style={{ alignSelf: "flex-end" }}
         >
           <span>Change password</span>
+        </button>
+        <button
+          className="btn"
+          onClick={() => {
+            handleLogoutAll();
+          }}
+          style={{ alignSelf: "flex-end" }}
+        >
+          <span>Log-out All</span>
         </button>
       </div>
 
