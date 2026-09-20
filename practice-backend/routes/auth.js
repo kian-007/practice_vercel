@@ -72,9 +72,13 @@ router.post(
         JWT_SECRET,
         { expiresIn: "15m" },
       );
-      const refreshToken = jwt.sign({ email: user.email }, JWT_REFRESH_SECRET, {
-        expiresIn: "7d",
-      });
+      const refreshToken = jwt.sign(
+        { id: user.id, email: user.email },
+        JWT_REFRESH_SECRET,
+        {
+          expiresIn: "7d",
+        },
+      );
 
       // User-Agent دستگاه
       const userAgent = req.headers["user-agent"] || "Unknown";
@@ -320,10 +324,16 @@ router.post(
   asyncHandler(async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
-      await pool.query("DELETE FROM refresh_tokens WHERE token = $1", [
-        refreshToken,
-      ]);
+      const result = await pool.query(
+        "DELETE FROM refresh_tokens WHERE token = $1 RETURNING user_id",
+        [refreshToken],
+      );
+      const userId = result.rows[0]?.user_id;
+      if (userId) {
+        await redis.del(`sessions:${userId}`);
+      }
     }
+
     res.clearCookie("token", cookieOptions);
     res.clearCookie("refreshToken", cookieOptions);
     res.json({ success: true });
