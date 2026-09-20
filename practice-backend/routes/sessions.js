@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { pool } = require("../config/db");
+const redis = require("../config/redis");
 const { requireAuth } = require("../middleware/auth");
 const { asyncHandler } = require("../middleware/asyncHandler");
 
@@ -39,6 +40,17 @@ router.get(
   "/sessions",
   requireAuth,
   asyncHandler(async (req, res) => {
+    const cacheKey = `sessions:${req.user.id}`;
+
+    const cached = await redis.get(cacheKey);
+
+    if (cached) {
+      return res.json({
+        success: true,
+        sessions: cached,
+        source: "redis",
+      });
+    }
     const userResult = await pool.query(
       "SELECT id FROM users WHERE email = $1",
       [req.user.email],
@@ -68,9 +80,15 @@ router.get(
       [currentRefreshToken, user.id],
     );
 
+    const sessions = result.rows;
+    await redis.set(cacheKey, sessions, {
+      ex: 3600,
+    });
+
     res.json({
       success: true,
-      sessions: result.rows,
+      sessions: sessions,
+      source: "postgres",
     });
   }),
 );
