@@ -26,6 +26,7 @@ router.post(
     await pool.query("DELETE FROM refresh_tokens WHERE user_id = $1", [
       user.id,
     ]);
+    await redis.del(`sessions:${user.id}`);
 
     res.clearCookie("token");
     res.clearCookie("refreshToken");
@@ -98,9 +99,7 @@ router.get(
 
 router.delete(
   "/sessions/:id",
-
   requireAuth,
-
   asyncHandler(async (req, res) => {
     const sessionId = req.params.id;
 
@@ -126,6 +125,7 @@ router.delete(
       `,
       [sessionId, user.id],
     );
+    await redis.del(`sessions:${user.id}`);
 
     if (result.rows.length === 0) {
       return res.status(404).json({
