@@ -19,6 +19,13 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const RESETOKEN_SECRET = process.env.RESETOKEN_SECRET;
 const CLIENT_URL = process.env.CLIENT_URL;
 
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+};
+
 router.post(
   "/register",
   registerValidation,
@@ -77,17 +84,11 @@ router.post(
       );
 
       res.cookie("token", accessToken, {
-        httpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
+        ...cookieOptions,
         maxAge: 15 * 60 * 1000,
       });
       res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
+        ...cookieOptions,
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       res.json({ success: true, message: "successful login :D" });
@@ -320,8 +321,8 @@ router.post(
         refreshToken,
       ]);
     }
-    res.clearCookie("token");
-    res.clearCookie("refreshToken");
+    res.clearCookie("token", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
     res.json({ success: true });
   }),
 );
@@ -375,17 +376,11 @@ router.post(
       [newRefreshToken, refreshToken],
     );
     res.cookie("token", newAccessToken, {
-      httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
+      ...cookieOptions,
       maxAge: 15 * 60 * 1000,
     });
     res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.json({ success: true });
