@@ -41,7 +41,6 @@ router.get(
   requireAuth,
   asyncHandler(async (req, res) => {
     const cacheKey = `sessions:${req.user.id}`;
-
     const cached = await redis.get(cacheKey);
 
     if (cached) {

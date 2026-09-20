@@ -13,6 +13,7 @@ const {
 } = require("../validators/authValidators");
 const { handleValidation } = require("../middleware/validate");
 const { asyncHandler } = require("../middleware/asyncHandler");
+const redis = require("../config/redis");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
@@ -82,6 +83,8 @@ router.post(
         `INSERT INTO refresh_tokens(user_id, token, user_agent)VALUES ($1, $2, $3)`,
         [user.id, refreshToken, userAgent],
       );
+
+      await redis.del(`sessions:${user.id}`);
 
       res.cookie("token", accessToken, {
         ...cookieOptions,
