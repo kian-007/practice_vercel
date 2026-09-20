@@ -61,16 +61,16 @@ const Dashboard = () => {
         )}
       </div>
 
-      <div className="div-btn">
+      <div className="divbtn">
         <button
-          className="btn"
+          className="dashbtn"
           onClick={() => navigate("/change-password")}
           style={{ alignSelf: "flex-end" }}
         >
           <span>Change password</span>
         </button>
         <button
-          className="btn"
+          className="dashbtn"
           onClick={() => {
             handleLogoutAll();
           }}

@@ -26,14 +26,14 @@
     font-weight: bold;
 }
 
-.div-btn {
+.divbtn {
     width: 80%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
 }
 
-.div-btn button {
+.dashbtn {
     cursor: pointer;
     background-color: #ffb347;
     height: 30px;
@@ -44,7 +44,7 @@
     margin-top: 15px;
 }
 
-.btn::before {
+.dashbtn::before {
     content: '';
     width: 100%;
     height: 100%;
@@ -58,15 +58,15 @@
     z-index: 1;
 }
 
-.btn:hover::before {
+.dashbtn:hover::before {
     transform: scaleX(1);
 }
 
-.btn span {
+.dashbtn span {
     position: relative;
     z-index: 2;
 }
 
-.btn:hover span {
+.dashbtn:hover span {
     color: white;
 }
