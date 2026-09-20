@@ -103,19 +103,6 @@ router.delete(
   asyncHandler(async (req, res) => {
     const sessionId = req.params.id;
 
-    const userResult = await pool.query(
-      "SELECT id FROM users WHERE email = $1",
-      [req.user.email],
-    );
-    const user = userResult.rows[0];
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
     const result = await pool.query(
       `
       DELETE FROM refresh_tokens
@@ -123,17 +110,18 @@ router.delete(
       AND user_id = $2
       RETURNING id
       `,
-      [sessionId, user.id],
+      [sessionId, req.user.id],
     );
-    await redis.del(`sessions:${user.id}`);
 
-    if (result.rows.length === 0) {
+    // if (result.rows.length === 0)
+    if (result.rowCount === 0) {
       return res.status(404).json({
         success: false,
         message: "Session not found",
       });
     }
 
+    await redis.del(`sessions:${req.user.id}`);
     res.json({
       success: true,
       message: "Session revoked",
