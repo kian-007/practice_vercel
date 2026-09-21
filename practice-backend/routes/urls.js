@@ -34,11 +34,41 @@ router.post(
         `,
       [req.user.id, originalUrl, shortCode, expiresAt || null],
     );
+    await redis.del("allUrls");
 
     res.status(201).json({
       success: true,
       url: result.rows[0],
     });
+  }),
+);
+
+router.get(
+  "/urls",
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const cacheKey = "allUrls";
+    const cachedAllUrls = await redis.get(cacheKey);
+    if (cachedAllUrls) {
+      return res.status(200).json({ success: true, urls: cachedAllUrls });
+    }
+
+    const urlResult = await pool.query(`
+    SELECT *
+    FROM short_urls
+    ORDER BY created_at DESC
+    `);
+
+    if (urlResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "No URLs found" });
+    }
+    const urls = urlResult.rows;
+
+    await redis.set(cacheKey, urls, {
+      ex: 3600,
+    });
+
+    return res.status(200).json({ success: true, urls: urls });
   }),
 );
 

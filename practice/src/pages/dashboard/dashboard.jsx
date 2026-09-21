@@ -13,7 +13,8 @@ const Dashboard = () => {
   const [sessionsLoading, setSessionsLoading] = useState(true);
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
-  const [urlsLoading, setUrlsLoading] = useState(false);
+  const [urls, setUrls] = useState([]);
+  const [urlsLoading, setUrlsLoading] = useState(true);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -24,6 +25,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!loading && isLoggedIn) {
       loadSessions();
+      loadUrls();
     }
   }, [loading, isLoggedIn]);
 
@@ -34,6 +36,15 @@ const Dashboard = () => {
       setSessions(data.sessions);
     }
     setSessionsLoading(false);
+  };
+
+  const loadUrls = async () => {
+    const res = await fetchWithAuth(`${API_URL}/urls`);
+    const data = await res.json();
+    if (data.success) {
+      setUrls(data.urls);
+    }
+    setUrlsLoading(false);
   };
 
   const handleRevoke = async (id) => {
@@ -52,15 +63,38 @@ const Dashboard = () => {
 
   const handleUrlSubmit = async (e) => {
     e.preventDefault();
+    if (!originalUrl.trim()) {
+      return;
+    }
     setUrlsLoading(true);
-    const response = await fetchWithAuth(`${API_URL}/urls`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ originalUrl }),
-    });
-    const data = await response.json();
-    setShortUrl(data.url.short_code);
-    setUrlsLoading(false);
+    try {
+      const response = await fetchWithAuth(`${API_URL}/urls`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          originalUrl: originalUrl.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Create URL failed:", data.message);
+        return;
+      }
+
+      setShortUrl(data.url.short_code);
+
+      setOriginalUrl("");
+
+      await loadUrls();
+    } catch (error) {
+      console.error("Create URL error:", error);
+    } finally {
+      setUrlsLoading(false);
+    }
   };
 
   if (loading) return <p>loading...</p>;
@@ -124,9 +158,23 @@ const Dashboard = () => {
         />
         <span>shor url: {shortUrl}</span>
         <button disabled={urlsLoading}>
-          {urlsLoading ? "loading..." : "Create Url"}
+          {urlsLoading ? "Creating..." : "Create Url"}
         </button>
       </form>
+
+      <div className="urls">
+        <h1>All Urls</h1>
+        {urlsLoading ? (
+          <p>Loading...</p>
+        ) : (
+          urls.map((url) => (
+            <div key={url.id} className="url-row">
+              <span>{url.original_url}: </span>
+              <span> {url.short_code}</span>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

@@ -21,6 +21,22 @@
     border-radius: 8px;
 }
 
+.url {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 80%;
+}
+
+.url-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
 .current-badge {
     color: green;
     font-weight: bold;
@@ -74,7 +90,9 @@
 .shortUrls {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 10px;
+    width: 80%;
 }
 
 .shortUrls> :not(:first-child) {
