@@ -4,7 +4,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { pool } = require("../config/db");
 const { sendResetEmail } = require("../email");
-const { loginLimiter } = require("../middleware/rateLimiter");
+const {
+  loginLimiter,
+  registerLimiter,
+  forgotPasswordLimiter,
+} = require("../middleware/rateLimiter");
 const { requireAuth } = require("../middleware/auth");
 const {
   registerValidation,
@@ -29,6 +33,7 @@ const cookieOptions = {
 
 router.post(
   "/register",
+  registerLimiter,
   registerValidation,
   handleValidation,
   asyncHandler(async (req, res) => {
@@ -167,6 +172,7 @@ router.patch(
 
 router.post(
   "/forgot-password",
+  forgotPasswordLimiter,
   asyncHandler(async (req, res) => {
     const { email } = req.body;
     const userResult = await pool.query(
