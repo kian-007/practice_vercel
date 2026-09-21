@@ -70,3 +70,13 @@
 .dashbtn:hover span {
     color: white;
 }
+
+.shortUrls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.shortUrls> :not(:first-child) {
+    width: 250px;
+}

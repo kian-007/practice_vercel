@@ -11,6 +11,9 @@ const Dashboard = () => {
   const { userEmail, userRole, isLoggedIn, loading, logout } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
+  const [originalUrl, setOriginalUrl] = useState("");
+  const [shortUrl, setShortUrl] = useState("");
+  const [urlsLoading, setUrlsLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -36,7 +39,6 @@ const Dashboard = () => {
   const handleRevoke = async (id) => {
     const confirmed = window.confirm("این دستگاه از حسابت خارج بشه؟");
     if (!confirmed) return;
-
     await fetchWithAuth(`${API_URL}/sessions/${id}`, { method: "DELETE" });
     loadSessions();
   };
@@ -44,9 +46,21 @@ const Dashboard = () => {
   const handleLogoutAll = async () => {
     const confirmed = window.confirm("همه دستگاه ها از حساب خارج بشن؟");
     if (!confirmed) return;
-
     await fetchWithAuth(`${API_URL}/logout-all`, { method: "POST" });
     logout();
+  };
+
+  const handleUrlSubmit = async (e) => {
+    e.preventDefault();
+    setUrlsLoading(true);
+    const response = await fetchWithAuth(`${API_URL}/urls`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ originalUrl }),
+    });
+    const data = await response.json();
+    setShortUrl(data.url.short_code);
+    setUrlsLoading(false);
   };
 
   if (loading) return <p>loading...</p>;
@@ -100,6 +114,19 @@ const Dashboard = () => {
           ))
         )}
       </div>
+
+      <form onSubmit={handleUrlSubmit} className="shortUrls">
+        <h1>Create your short URLs</h1>
+        <input
+          placeholder="Original Url"
+          value={originalUrl}
+          onChange={(e) => setOriginalUrl(e.target.value)}
+        />
+        <span>shor url: {shortUrl}</span>
+        <button disabled={urlsLoading}>
+          {urlsLoading ? "loading..." : "Create Url"}
+        </button>
+      </form>
     </div>
   );
 };
