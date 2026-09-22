@@ -3,6 +3,7 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    overflow: hidden;
 }
 
 .sessions {
@@ -47,7 +48,7 @@
 }
 
 .divbtn {
-    width: 80%;
+    width: 50%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -91,7 +92,7 @@
     color: white;
 }
 
-.shortUrls {
+.dashboard form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -99,6 +100,24 @@
     width: 80%;
 }
 
-.shortUrls> :not(:first-child) {
-    width: 250px;
+.shortUrls {
+    border-left: 3px solid black;
+    border-right: 3px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 30%;
+}
+
+.shortUrls span {
+    font-size: 15px;
+    align-items: center;
+    justify-content: center;
+    line-height: 30px;
+}
+
+.shortUrls * {
+    width: 200px;
+    height: 30px;
 }

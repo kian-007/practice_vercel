@@ -72,34 +72,30 @@ const ShortUrls = () => {
   return (
     <>
       {/* {loading && <p>در حال بارگذاری...</p>} */}
-      <form onSubmit={handleUrlSubmit} className="shortUrls">
-        <h1>Create your short URLs</h1>
-
-        <input
-          placeholder="Original Url"
-          value={originalUrl}
-          onChange={(e) => setOriginalUrl(e.target.value)}
-        />
-
-        <span>Short URL: {shortUrl}</span>
-
-        <button disabled={loading}>
-          {loading ? "Creating..." : "Create Url"}
-        </button>
+      <form onSubmit={handleUrlSubmit}>
+        <h2>Create your short URLs</h2>
+        <div className="shortUrls">
+          <input
+            placeholder="Original Url"
+            value={originalUrl}
+            onChange={(e) => setOriginalUrl(e.target.value)}
+          />
+          <span>Short URL: {shortUrl}</span>
+          <button disabled={loading}>
+            {loading ? "Creating..." : "Create Url"}
+          </button>
+        </div>
       </form>
 
       <div className="urls">
         <h1>All Urls</h1>
-
         {loading ? (
           <p>Loading...</p>
         ) : (
           urls.map((url) => (
             <div key={url.id} className="url-row">
               <span style={{ flexGrow: "2" }}>{url.original_url}</span>
-
               <span>{url.short_code}</span>
-
               <button onClick={() => handleUrlRevoke(url.id)}>Delete</button>
             </div>
           ))
