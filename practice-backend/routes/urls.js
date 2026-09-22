@@ -47,28 +47,42 @@ router.get(
   "/urls",
   requireAuth,
   asyncHandler(async (req, res) => {
-    const cacheKey = "allUrls";
-    const cachedAllUrls = await redis.get(cacheKey);
-    if (cachedAllUrls) {
-      return res.status(200).json({ success: true, urls: cachedAllUrls });
-    }
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 5, 1), 50);
+    const offset = (page - 1) * limit;
 
-    const urlResult = await pool.query(`
-    SELECT *
-    FROM short_urls
-    ORDER BY created_at DESC
-    `);
+    const urlResult = await pool.query(
+      `
+      SELECT *
+      FROM short_urls
+      ORDER BY created_at DESC
+      LIMIT $1
+      OFFSET $2
+      `,
+      [limit, offset],
+    );
 
-    if (urlResult.rows.length === 0) {
-      return res.status(404).json({ success: false, message: "No URLs found" });
-    }
-    const urls = urlResult.rows;
+    const countResult = await pool.query(
+      `
+      SELECT COUNT(*) AS total
+      FROM short_urls
+      `,
+    );
 
-    await redis.set(cacheKey, urls, {
-      ex: 3600,
+    const total = Number(countResult.rows[0].total);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return res.status(200).json({
+      success: true,
+      urls: urlResult.rows,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
     });
-
-    return res.status(200).json({ success: true, urls: urls });
   }),
 );
 

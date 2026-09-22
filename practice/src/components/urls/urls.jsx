@@ -9,14 +9,21 @@ const ShortUrls = () => {
   const [shortUrl, setShortUrl] = useState("");
   const [urls, setUrls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit] = useState(5);
 
   const loadUrls = async () => {
     try {
-      const res = await fetchWithAuth(`${API_URL}/urls`);
+      const res = await fetchWithAuth(
+        `${API_URL}/urls?page=${page}&limit=${limit}`,
+      );
+
       const data = await res.json();
 
       if (data.success) {
         setUrls(data.urls);
+        setTotalPages(data.pagination.totalPages);
       }
     } catch (error) {
       console.error("Load URLs error:", error);
@@ -27,7 +34,7 @@ const ShortUrls = () => {
 
   useEffect(() => {
     loadUrls();
-  }, []);
+  }, [page]);
 
   const handleUrlSubmit = async (e) => {
     e.preventDefault();
@@ -92,13 +99,34 @@ const ShortUrls = () => {
         {loading ? (
           <p>Loading...</p>
         ) : (
-          urls.map((url) => (
-            <div key={url.id} className="url-row">
-              <span style={{ flexGrow: "2" }}>{url.original_url}</span>
-              <span>{url.short_code}</span>
-              <button onClick={() => handleUrlRevoke(url.id)}>Delete</button>
+          <>
+            {urls.map((url) => (
+              <div key={url.id} className="url-row">
+                <span style={{ flexGrow: "2" }}>{url.original_url}</span>
+
+                <span>{url.short_code}</span>
+
+                <button onClick={() => handleUrlRevoke(url.id)}>Delete</button>
+              </div>
+            ))}
+
+            <div className="pagination">
+              <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+                before
+              </button>
+
+              <span>
+                page {page} from {totalPages}
+              </span>
+
+              <button
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                next
+              </button>
             </div>
-          ))
+          </>
         )}
       </div>
     </>
