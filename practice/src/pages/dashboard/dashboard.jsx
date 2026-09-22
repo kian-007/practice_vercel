@@ -11,6 +11,10 @@ const Dashboard = () => {
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
     if (!loading && !isLoggedIn) {
       navigate("/login");
     }

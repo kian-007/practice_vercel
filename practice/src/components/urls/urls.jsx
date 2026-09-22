@@ -59,7 +59,11 @@ const ShortUrls = () => {
 
       setShortUrl(data.url.short_code);
       setOriginalUrl("");
-      await loadUrls();
+      if (page === 1) {
+        loadUrls();
+      } else {
+        setPage(1);
+      }
     } catch (error) {
       console.error("Create URL error:", error);
     } finally {

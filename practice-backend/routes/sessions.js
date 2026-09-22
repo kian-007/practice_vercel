@@ -4,6 +4,12 @@ const { pool } = require("../config/db");
 const redis = require("../config/redis");
 const { requireAuth } = require("../middleware/auth");
 const { asyncHandler } = require("../middleware/asyncHandler");
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+};
 
 //-----(بونوس اختیاری) یه route برای «خروج از همه‌ی دستگاه‌ها»----
 router.post(
