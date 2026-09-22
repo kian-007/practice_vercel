@@ -80,7 +80,7 @@ const ShortUrls = () => {
     <>
       {/* {loading && <p>در حال بارگذاری...</p>} */}
       <form onSubmit={handleUrlSubmit}>
-        <h2>Create your short URLs</h2>
+        <h2 style={{ color: "orange" }}>Create your short URLs</h2>
         <div className="shortUrls">
           <input
             placeholder="Original Url"

@@ -10,26 +10,16 @@ router.post(
   "/logout-all",
   requireAuth,
   asyncHandler(async (req, res) => {
-    const userResult = await pool.query(
-      "SELECT id FROM users WHERE email = $1",
-      [req.user.email],
-    );
-    const user = userResult.rows[0];
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
+    console.log("REQ USER:", req.user);
     await pool.query("DELETE FROM refresh_tokens WHERE user_id = $1", [
-      user.id,
+      req.user.id,
     ]);
-    await redis.del(`sessions:${user.id}`);
 
-    res.clearCookie("token");
-    res.clearCookie("refreshToken");
+    await redis.del(`sessions:${req.user.id}`);
+
+    res.clearCookie("token", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
+
     res.json({
       success: true,
       message: "Logged out from all devices",

@@ -1,15 +1,14 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./dashboard.css";
-
 import { useAuth } from "../../authContext";
-
 import { Sessions, ShortUrls } from "../../components";
+import { fetchWithAuth } from "../../api";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-
   const { userEmail, userRole, isLoggedIn, loading, logout } = useAuth();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -17,17 +16,17 @@ const Dashboard = () => {
     }
   }, [loading, isLoggedIn]);
 
-  const handleLogoutAll = async () => {
+  const handleLogoutAll = async (e) => {
     const confirmed = window.confirm("همه دستگاه ها از حساب خارج بشن؟");
-
-    if (!confirmed) return;
-
-    // این قسمت رو می‌تونیم بعداً هم ببریم داخل AuthContext
-    await fetchWithAuth(`${API_URL}/logout-all`, {
-      method: "POST",
-    });
-
-    logout();
+    if (confirmed) {
+      await fetchWithAuth(`${API_URL}/logout-all`, {
+        method: "POST",
+      });
+      logout();
+    } else {
+      e.preventDefault();
+      return;
+    }
   };
 
   if (loading) {
@@ -54,9 +53,7 @@ const Dashboard = () => {
         </button>
         <button
           className="dashbtn"
-          onClick={() => {
-            handleLogoutAll();
-          }}
+          onClick={handleLogoutAll}
           style={{ alignSelf: "flex-end" }}
         >
           <span>Log-out All</span>

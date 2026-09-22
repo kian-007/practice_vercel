@@ -174,8 +174,6 @@ router.delete(
   "/urls/:id",
   requireAuth,
   asyncHandler(async (req, res) => {
-    console.log("REQ USER:", req.user);
-    console.log("URL ID:", req.params.id);
     const { id } = req.params;
     const result = await pool.query(
       `
