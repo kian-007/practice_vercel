@@ -156,4 +156,40 @@ router.get(
   }),
 );
 
+router.delete(
+  "/urls/:id",
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    console.log("REQ USER:", req.user);
+    console.log("URL ID:", req.params.id);
+    const { id } = req.params;
+    const result = await pool.query(
+      `
+      DELETE FROM short_urls
+      WHERE id = $1
+      AND user_id = $2
+      RETURNING id, short_code
+      `,
+      [id, req.user.id],
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "URL not found or you don't have permission to delete it",
+      });
+    }
+
+    const shortCode = result.rows[0].short_code;
+
+    await redis.del(`shorturl:${shortCode}`);
+    await redis.del("allUrls");
+
+    return res.status(200).json({
+      success: true,
+      message: "URL deleted successfully",
+    });
+  }),
+);
+
 module.exports = router;

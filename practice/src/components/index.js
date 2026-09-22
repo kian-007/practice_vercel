@@ -2,6 +2,8 @@ export { default as Content } from "./content/content";
 export { default as Header } from "./header/header";
 export { default as Footer } from "./footer/footer";
 export { default as Layots } from "./layots/layots";
+export { default as Sessions } from "./sessions/sessions";
+export { default as ShortUrls } from "./urls/urls";
 
 export { default as Login } from "../pages/login/login";
 export { default as Register } from "../pages/register/register";
