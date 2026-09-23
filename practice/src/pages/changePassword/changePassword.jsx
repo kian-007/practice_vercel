@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../authContext";
 import { useNavigate } from "react-router-dom";
 import "./changePassword.css";
@@ -10,9 +10,14 @@ const ChangePassword = () => {
   const [message, setMessage] = useState("Change password");
   const [success, setSuccess] = useState(undefined);
   const [loading, setLoading] = useState(undefined);
+  const boxRef = useRef(null);
   const { logout } = useAuth();
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    boxRef.current?.classList.add("show");
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +71,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <div>
+    <div ref={boxRef}>
       <div className="changePass">
         <span
           className={

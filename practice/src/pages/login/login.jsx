@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../authContext";
@@ -12,6 +12,11 @@ const Login = () => {
   const { login, loading } = useAuth();
   const [success, setSuccess] = useState();
   const API_URL = import.meta.env.VITE_API_URL;
+  const loginRef = useRef(null);
+
+  useEffect(() => {
+    loginRef.current?.classList.add("show");
+  }, []);
 
   const handleSubmit = async (e) => {
     setMessage("loading...");
@@ -45,7 +50,7 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div ref={loginRef}>
       <span className="page">
         <Link to="/register">Register</Link>|<Link to="/login">Login</Link>
       </span>
