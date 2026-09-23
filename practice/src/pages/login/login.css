@@ -13,6 +13,12 @@ div:has(> .login).show {
     opacity: 1;
 }
 
+.login.show {
+    transition: border .4s ease-in-out .4s;
+    border: 2px solid orange;
+    border-radius: 15px;
+}
+
 .page {
     display: flex;
     width: 170px;
@@ -51,12 +57,10 @@ div:has(> .login).show {
     width: 100%;
     height: clamp(250px, 50vh, 350px);
     background-color: black;
-    border-radius: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 2px solid orange;
 }
 
 .login form {

@@ -12,9 +12,11 @@ const Login = () => {
   const { login, loading } = useAuth();
   const [success, setSuccess] = useState();
   const API_URL = import.meta.env.VITE_API_URL;
+  const loginBoxRef = useRef(null);
   const loginRef = useRef(null);
 
   useEffect(() => {
+    loginBoxRef.current?.classList.add("show");
     loginRef.current?.classList.add("show");
   }, []);
 
@@ -50,11 +52,11 @@ const Login = () => {
   };
 
   return (
-    <div ref={loginRef}>
+    <div ref={loginBoxRef}>
       <span className="page">
         <Link to="/register">Register</Link>|<Link to="/login">Login</Link>
       </span>
-      <div className="login">
+      <div ref={loginRef} className="login">
         <span
           className={
             success === undefined

@@ -11,12 +11,14 @@ const ChangePassword = () => {
   const [success, setSuccess] = useState(undefined);
   const [loading, setLoading] = useState(undefined);
   const boxRef = useRef(null);
+  const changePassRef = useRef(null);
   const { logout } = useAuth();
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   useEffect(() => {
     boxRef.current?.classList.add("show");
+    changePassRef.current?.classList.add("show");
   }, []);
 
   const handleSubmit = async (e) => {
@@ -72,7 +74,7 @@ const ChangePassword = () => {
 
   return (
     <div ref={boxRef}>
-      <div className="changePass">
+      <div ref={changePassRef} className="changePass">
         <span
           className={
             success === undefined
