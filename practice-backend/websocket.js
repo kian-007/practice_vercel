@@ -1,7 +1,8 @@
 const WebSocket = require("ws");
 
+let wss;
 function setupWebSocket(server) {
-  const wss = new WebSocket.Server({ server });
+  wss = new WebSocket.Server({ server });
 
   wss.on("connection", (socket) => {
     console.log("Client connected");
@@ -13,10 +14,6 @@ function setupWebSocket(server) {
       }),
     );
 
-    socket.on("message", (message) => {
-      console.log("Message:", message.toString());
-    });
-
     socket.on("close", () => {
       console.log("Client disconnected");
     });
@@ -25,4 +22,14 @@ function setupWebSocket(server) {
   return wss;
 }
 
-module.exports = setupWebSocket;
+function broadcast(data) {
+  if (!wss) return;
+
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  });
+}
+
+module.exports = { setupWebSocket, broadcast };

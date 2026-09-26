@@ -4,6 +4,7 @@ const redis = require("../config/redis");
 const { pool } = require("../config/db");
 const { requireAuth } = require("../middleware/auth");
 const { asyncHandler } = require("../middleware/asyncHandler");
+const { broadcast } = require("../websocket");
 
 const router = express.Router();
 
@@ -35,6 +36,11 @@ router.post(
       [req.user.id, originalUrl, shortCode, expiresAt || null],
     );
     await redis.del("allUrls");
+
+    broadcast({
+      type: "url_created",
+      url: result.rows[0],
+    });
 
     res.status(201).json({
       success: true,
@@ -196,6 +202,11 @@ router.delete(
 
     await redis.del(`shorturl:${shortCode}`);
     await redis.del("allUrls");
+
+    broadcast({
+      type: "url_deleted",
+      id: result.rows[0].id,
+    });
 
     return res.status(200).json({
       success: true,

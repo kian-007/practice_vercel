@@ -1,6 +1,6 @@
 const app = require("./app");
 const http = require("http");
-const setupWebSocket = require("./websocket");
+const { setupWebSocket } = require("./websocket");
 const { pool } = require("./config/db");
 
 // ---------- ساخت جدول و راه‌اندازی سرور ----------

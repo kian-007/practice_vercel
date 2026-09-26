@@ -9,28 +9,28 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const socketRef = useRef(null);
   const [messages, setMessages] = useState([]);
+  const [lastEvent, setLastEvent] = useState(null);
+  const [wsloading, setWsloading] = useState(true);
 
   const { userEmail, userRole, isLoggedIn, loading, logout } = useAuth();
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-
     // const socket = new WebSocket("ws://localhost:5000");
     const socket = new WebSocket(API_URL.replace(/^http/, "ws"));
-
     socketRef.current = socket;
 
     socket.onopen = () => {
       console.log("WebSocket connected");
+      setWsloading(false);
     };
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
       console.log("Message from server:", data);
-
       setMessages((prev) => [...prev, data]);
+      setLastEvent(data);
     };
 
     socket.onclose = () => {
@@ -43,6 +43,7 @@ const Dashboard = () => {
 
     return () => {
       socket.close();
+      setWsloading(true);
     };
   }, []);
 
@@ -65,19 +66,28 @@ const Dashboard = () => {
     }
   };
 
+  const sendMessage = () => {
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send("Hello from Dashboard!");
+    }
+  };
+
   if (loading) {
     return <p>loading...</p>;
+  }
+  if (wsloading) {
+    return <p>connecting...</p>;
   }
 
   return (
     <div className="dashboard">
-      <div>
+      <div style={{ margin: "20px 20px" }}>
         <h1>Dashboard</h1>
         <div>
           {isLoggedIn && (
-            <span>
+            <h3>
               Welcome, {userEmail} - {userRole}
-            </span>
+            </h3>
           )}
         </div>
 
@@ -90,21 +100,20 @@ const Dashboard = () => {
         <button
           className="dashbtn"
           onClick={() => navigate("/change-password")}
-          style={{ alignSelf: "flex-end" }}
         >
           <span>Change password</span>
         </button>
-        <button
-          className="dashbtn"
-          onClick={handleLogoutAll}
-          style={{ alignSelf: "flex-end" }}
-        >
+        <button className="dashbtn" onClick={handleLogoutAll}>
           <span>Log-out All</span>
+        </button>
+
+        <button onClick={sendMessage} className="dashbtn">
+          <span>Send WebSocket Message</span>
         </button>
       </div>
 
       <Sessions />
-      <ShortUrls />
+      <ShortUrls lastEvent={lastEvent} />
     </div>
   );
 };

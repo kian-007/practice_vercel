@@ -4,7 +4,7 @@ import "../../pages/dashboard/dashboard.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const ShortUrls = () => {
+const ShortUrls = ({ lastEvent }) => {
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [urls, setUrls] = useState([]);
@@ -18,7 +18,6 @@ const ShortUrls = () => {
       const res = await fetchWithAuth(
         `${API_URL}/urls?page=${page}&limit=${limit}`,
       );
-
       const data = await res.json();
 
       if (data.success) {
@@ -35,6 +34,14 @@ const ShortUrls = () => {
   useEffect(() => {
     loadUrls();
   }, [page]);
+
+  useEffect(() => {
+    if (!lastEvent) return;
+
+    if (lastEvent.type === "url_created" || lastEvent.type === "url_deleted") {
+      loadUrls();
+    }
+  }, [lastEvent]);
 
   const handleUrlSubmit = async (e) => {
     e.preventDefault();
@@ -74,10 +81,21 @@ const ShortUrls = () => {
   const handleUrlRevoke = async (id) => {
     const confirmed = window.confirm("Are you sure?");
     if (!confirmed) return;
-    await fetchWithAuth(`${API_URL}/urls/${id}`, {
-      method: "DELETE",
-    });
-    loadUrls();
+    try {
+      const res = await fetchWithAuth(`${API_URL}/urls/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "URL deletion failed.");
+        return;
+      }
+      loadUrls();
+    } catch (error) {
+      console.error("Delete URL error:", error);
+      alert("خطایی در حذف URL رخ داد.");
+    }
   };
 
   return (
