@@ -129,3 +129,23 @@
 .pagination {
     margin: auto;
 }
+
+.dashboard #urlContainer {
+    display: none;
+}
+
+a {
+    cursor: pointer;
+    &:hover {
+        color: lightblue;
+        text-decoration: underline;
+    }
+}
+
+#urlContainer {
+    display: none;
+}
+
+#urlContainer.show {
+    display: block;
+}

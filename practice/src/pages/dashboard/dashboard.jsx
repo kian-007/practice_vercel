@@ -16,6 +16,16 @@ const Dashboard = () => {
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    if (!loading && !isLoggedIn) {
+      navigate("/login");
+    }
+    if (!loading && isLoggedIn && userRole !== "admin") {
+      navigate("/");
+      alert("You dont have permition to access this path");
+    }
+  }, [loading, isLoggedIn]);
+
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     // const socket = new WebSocket("ws://localhost:5000");
     const socket = new WebSocket(API_URL.replace(/^http/, "ws"));
@@ -47,12 +57,6 @@ const Dashboard = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!loading && !isLoggedIn) {
-      navigate("/login");
-    }
-  }, [loading, isLoggedIn]);
-
   const handleLogoutAll = async (e) => {
     const confirmed = window.confirm("همه دستگاه ها از حساب خارج بشن؟");
     if (confirmed) {
@@ -77,6 +81,11 @@ const Dashboard = () => {
   }
   if (wsloading) {
     return <p>connecting...</p>;
+  }
+
+  function handleUrl() {
+    const urlContainer = document.getElementById("urlContainer");
+    urlContainer.classList.toggle("show");
   }
 
   return (
@@ -113,6 +122,7 @@ const Dashboard = () => {
       </div>
 
       <Sessions />
+      <a onClick={handleUrl}>Create Urls</a>
       <ShortUrls lastEvent={lastEvent} />
     </div>
   );

@@ -101,7 +101,7 @@ const ShortUrls = ({ lastEvent }) => {
   };
 
   return (
-    <>
+    <div id="urlContainer">
       {/* {loading && <p>در حال بارگذاری...</p>} */}
       <form onSubmit={handleUrlSubmit}>
         <h2 style={{ color: "orange" }}>Create your short URLs</h2>
@@ -161,7 +161,7 @@ const ShortUrls = ({ lastEvent }) => {
           </>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
