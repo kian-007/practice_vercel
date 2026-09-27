@@ -5,6 +5,7 @@ const { pool } = require("../config/db");
 const { requireAuth } = require("../middleware/auth");
 const { asyncHandler } = require("../middleware/asyncHandler");
 const { broadcast } = require("../websocket");
+const { createUrlLimiter } = require("../middleware/rateLimiter");
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ function generateShortCode() {
 
 router.post(
   "/urls",
+  createUrlLimiter,
   requireAuth,
   asyncHandler(async (req, res) => {
     const { originalUrl, expiresAt } = req.body;
@@ -45,6 +47,7 @@ router.post(
     res.status(201).json({
       success: true,
       url: result.rows[0],
+      message: "URL created successfully",
     });
   }),
 );

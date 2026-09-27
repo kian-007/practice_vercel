@@ -33,8 +33,20 @@ const forgotPasswordLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const createUrlLimiter = rateLimit({
+  windowMs: 2 * 60 * 1000,
+  max: 5,
+  message: {
+    success: false,
+    message: "Too many URLs created. Please try again later.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 module.exports = {
   loginLimiter,
   registerLimiter,
   forgotPasswordLimiter,
+  createUrlLimiter,
 };

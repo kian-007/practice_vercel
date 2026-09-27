@@ -12,6 +12,7 @@ const ShortUrls = ({ lastEvent }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(5);
+  const [message, setMessage] = useState("");
 
   const loadUrls = async () => {
     try {
@@ -37,7 +38,6 @@ const ShortUrls = ({ lastEvent }) => {
 
   useEffect(() => {
     if (!lastEvent) return;
-
     if (lastEvent.type === "url_created" || lastEvent.type === "url_deleted") {
       loadUrls();
     }
@@ -61,11 +61,13 @@ const ShortUrls = ({ lastEvent }) => {
 
       if (!response.ok) {
         console.error("Create URL failed:", data.message);
+        setMessage(data.message);
         return;
       }
 
       setShortUrl(data.url.short_code);
       setOriginalUrl("");
+      setMessage(data.message);
       if (page === 1) {
         loadUrls();
       } else {
@@ -103,6 +105,14 @@ const ShortUrls = ({ lastEvent }) => {
       {/* {loading && <p>در حال بارگذاری...</p>} */}
       <form onSubmit={handleUrlSubmit}>
         <h2 style={{ color: "orange" }}>Create your short URLs</h2>
+        <p
+          style={{
+            color: "gray",
+            marginTop: "0",
+          }}
+        >
+          {loading ? "loading.." : message ? message : null}
+        </p>
         <div className="shortUrls">
           <input
             placeholder="Original Url"
