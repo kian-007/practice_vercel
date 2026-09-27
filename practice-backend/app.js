@@ -8,6 +8,7 @@ const userRoutes = require("./routes/user");
 const sessionRoutes = require("./routes/sessions");
 const adminRoutes = require("./routes/admin");
 const urlRoutes = require("./routes/urls");
+const messagesRoutes = require("./routes/messages");
 const { notFoundHandler, errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
@@ -40,6 +41,7 @@ app.use("/", userRoutes);
 app.use("/", sessionRoutes);
 app.use("/", adminRoutes);
 app.use("/", urlRoutes);
+app.use("/", messagesRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

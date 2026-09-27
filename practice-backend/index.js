@@ -67,6 +67,16 @@ setupWebSocket(server);
     created_at TIMESTAMPTZ DEFAULT NOW()
   )
 `);
+  //---------- RealTime Chat ---------
+  await pool.query(`
+  CREATE TABLE messages (
+  id SERIAL PRIMARY KEY,
+  sender_id INTEGER NOT NULL REFERENCES users(id),
+  receiver_id INTEGER NOT NULL REFERENCES users(id),
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+)
+  `);
 
   // app.listen(5000, () => console.log("backend run at port:5000"));
   server.listen(PORT, () => {
