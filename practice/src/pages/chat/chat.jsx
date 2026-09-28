@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { fetchWithAuth } from "../../api";
 import "./chat.css";
 import { useSocket } from "../../socketContext";
@@ -15,6 +15,7 @@ const Chat = () => {
   const { lastEvent } = useSocket();
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
+  const textRef = useRef(null);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -41,6 +42,13 @@ const Chat = () => {
     };
     loadHistory();
   }, [selectedUser]);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   useEffect(() => {
     if (!lastEvent || lastEvent.type !== "new_message") return;
@@ -110,6 +118,7 @@ const Chat = () => {
 
           <form onSubmit={handleSend}>
             <textarea
+              ref={textRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Type a message"
