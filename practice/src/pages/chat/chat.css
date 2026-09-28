@@ -24,6 +24,11 @@
     font: normal 20px/1.5 Arial, sans-serif;
     border-radius: 15px;
     border: 1px solid white;
+    transition: background-color 0.2s ease-out;
+    &:hover {
+        background-color: #ffb347;
+        color: white;
+    }
 }
 
 .chat-messages {
