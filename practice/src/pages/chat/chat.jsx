@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../../api";
-import "../dashboard/dashboard.css";
+import "./chat.css";
 import { useSocket } from "../../socketContext";
+import { useAuth } from "../../authContext";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,6 +13,14 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const { lastEvent } = useSocket();
+  const { isLoggedIn, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !isLoggedIn) {
+      navigate("/login");
+    }
+  }, []);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -62,6 +72,10 @@ const Chat = () => {
     setText("");
   };
 
+  if (loading) {
+    return <p>loading...</p>;
+  }
+
   return (
     <div className="chat">
       <h2 style={{ color: "orange" }}>Chat</h2>
@@ -79,21 +93,23 @@ const Chat = () => {
           <h3>Chat with {selectedUser.email}</h3>
 
           <div className="chat-messages">
-            {messages.map((msg) => (
-              <p key={msg.id}>
-                <strong>
-                  {msg.sender_id === selectedUser.id
-                    ? selectedUser.email
-                    : "Me"}
-                  :
-                </strong>{" "}
-                {msg.content}
-              </p>
-            ))}
+            {messages.map((msg) =>
+              msg.sender_id === selectedUser.id ? (
+                <p key={msg.id}>
+                  <strong>
+                    {selectedUser.email}: {msg.content}
+                  </strong>
+                </p>
+              ) : (
+                <p key={msg.id}>
+                  <strong className="meStrong">Me: {msg.content}</strong>
+                </p>
+              ),
+            )}
           </div>
 
           <form onSubmit={handleSend}>
-            <input
+            <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Type a message"

@@ -74,6 +74,9 @@
     .shortUrls {
         border: none
     }
+    .chat form textarea {
+        max-width: 90%;
+    }
 }
 
 @media (min-width: 601px) {
