@@ -37,6 +37,11 @@ const Header = () => {
           </Link>
         </p>
         <p>
+          <Link to="/chat" className="header-link">
+            Chat
+          </Link>
+        </p>
+        <p>
           {isLoggedIn ? (
             <Link to="/login" onClick={handleLogout} className="header-link">
               Logout

@@ -2,6 +2,7 @@ const express = require("express");
 const { pool } = require("../config/db");
 const { requireAuth } = require("../middleware/auth");
 const { asyncHandler } = require("../middleware/asyncHandler");
+const { sendToUser } = require("../websocket");
 
 const router = express.Router();
 
@@ -26,6 +27,11 @@ router.post(
       `,
       [req.user.id, receiverId, content.trim()],
     );
+
+    sendToUser(receiverId, {
+      type: "new_message",
+      data: result.rows[0],
+    });
 
     res.status(201).json({
       success: true,
@@ -54,6 +60,27 @@ router.get(
     res.status(200).json({
       success: true,
       messages: result.rows,
+    });
+  }),
+);
+
+router.get(
+  "/chat/users",
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const result = await pool.query(
+      `
+      SELECT id, email
+      FROM users
+      WHERE id <> $1
+      ORDER BY email ASC
+      `,
+      [req.user.id],
+    );
+
+    res.status(200).json({
+      success: true,
+      users: result.rows,
     });
   }),
 );

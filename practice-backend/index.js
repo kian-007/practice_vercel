@@ -69,7 +69,7 @@ setupWebSocket(server);
 `);
   //---------- RealTime Chat ---------
   await pool.query(`
-  CREATE TABLE messages (
+  CREATE TABLE IF NOT EXISTS messages (
   id SERIAL PRIMARY KEY,
   sender_id INTEGER NOT NULL REFERENCES users(id),
   receiver_id INTEGER NOT NULL REFERENCES users(id),

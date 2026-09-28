@@ -51,21 +51,21 @@
 }
 
 .divbtn {
-    width: 50%;
+    width: 90%;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
 }
 
 .dashbtn {
     cursor: pointer;
     background-color: #ffb347;
-    height: 30px;
+    height: 40px;
     width: auto;
     border-radius: 7px;
     position: relative;
     overflow: hidden;
-    margin-top: 15px;
+    margin: 15px 15px;
     align-self: flex-end;
 }
 
@@ -147,5 +147,8 @@ a {
 }
 
 #urlContainer.show {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

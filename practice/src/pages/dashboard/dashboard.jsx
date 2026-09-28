@@ -4,13 +4,12 @@ import "./dashboard.css";
 import { useAuth } from "../../authContext";
 import { Sessions, ShortUrls } from "../../components";
 import { fetchWithAuth } from "../../api";
+import { useSocket } from "../../socketContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const socketRef = useRef(null);
-  const [messages, setMessages] = useState([]);
-  const [lastEvent, setLastEvent] = useState(null);
-  const [wsloading, setWsloading] = useState(true);
+
+  const { lastEvent, wsloading } = useSocket();
 
   const { userEmail, userRole, isLoggedIn, loading, logout } = useAuth();
   const API_URL = import.meta.env.VITE_API_URL;
@@ -27,34 +26,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    // const socket = new WebSocket("ws://localhost:5000");
-    const socket = new WebSocket(API_URL.replace(/^http/, "ws"));
-    socketRef.current = socket;
-
-    socket.onopen = () => {
-      console.log("WebSocket connected");
-      setWsloading(false);
-    };
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("Message from server:", data);
-      setMessages((prev) => [...prev, data]);
-      setLastEvent(data);
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket disconnected");
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    return () => {
-      socket.close();
-      setWsloading(true);
-    };
   }, []);
 
   const handleLogoutAll = async (e) => {
@@ -67,12 +38,6 @@ const Dashboard = () => {
     } else {
       e.preventDefault();
       return;
-    }
-  };
-
-  const sendMessage = () => {
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send("Hello from Dashboard!");
     }
   };
 
@@ -99,10 +64,6 @@ const Dashboard = () => {
             </h3>
           )}
         </div>
-
-        {messages.map((message, index) => (
-          <p key={index}>{message.message}</p>
-        ))}
       </div>
 
       <div className="divbtn">
@@ -114,10 +75,6 @@ const Dashboard = () => {
         </button>
         <button className="dashbtn" onClick={handleLogoutAll}>
           <span>Log-out All</span>
-        </button>
-
-        <button onClick={sendMessage} className="dashbtn">
-          <span>Send WebSocket Message</span>
         </button>
       </div>
 
