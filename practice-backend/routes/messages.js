@@ -2,6 +2,7 @@ const express = require("express");
 const { pool } = require("../config/db");
 const { requireAuth } = require("../middleware/auth");
 const { asyncHandler } = require("../middleware/asyncHandler");
+const { messageLimiter } = require("../middleware/rateLimiter");
 const { sendToUser } = require("../websocket");
 
 const router = express.Router();
@@ -9,6 +10,7 @@ const router = express.Router();
 router.post(
   "/messages",
   requireAuth,
+  messageLimiter,
   asyncHandler(async (req, res) => {
     const { receiverId, content } = req.body;
 
@@ -16,6 +18,21 @@ router.post(
       return res.status(400).json({
         success: false,
         message: "receiverId and content are required",
+      });
+    }
+
+    // جلوگیری از پیام‌دادن به خود
+    if (Number(receiverId) === req.user.id) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot send a message to yourself",
+      });
+    }
+
+    if (content.trim().length > 1000) {
+      return res.status(400).json({
+        success: false,
+        message: "Message is too long (max 1000 characters)",
       });
     }
 

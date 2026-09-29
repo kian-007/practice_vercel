@@ -4,10 +4,12 @@
     align-items: center;
     flex-direction: column;
     width: 90%;
-    background-color: azure;
+    background-color: wheat;
     border-radius: 15px;
     color: black;
     padding: 7px;
+    /* max-height: 1000px; */
+    /* overflow-y: auto; */
 }
 
 .chat-users {
@@ -19,7 +21,9 @@
 }
 
 .chat-users button {
-    background-color: lavender;
+    /* background-color: lavender; */
+    background-color: black;
+    color: wheat;
     height: 40px;
     font: normal 20px/1.5 Arial, sans-serif;
     border-radius: 15px;
@@ -27,7 +31,7 @@
     transition: background-color 0.2s ease-out;
     &:hover {
         background-color: #ffb347;
-        color: white;
+        color: black;
     }
 }
 
@@ -47,13 +51,13 @@
 .chat-messages p strong {
     font-size: 20px;
     border-radius: 20px 0 20px 20px;
-    background-color: antiquewhite;
+    background-color: white;
     padding: 7px;
     font: normal 300 20px/1.5 sans-serif;
 }
 
 .chat-messages p .meStrong {
-    background-color: #fad4a2;
+    background-color: azure;
     float: right;
 }
 
@@ -84,7 +88,7 @@ form textarea {
     box-sizing: border-box;
 }
 
-form button {
+.chat .chatBtn {
     border-radius: 50%;
     height: 45px;
     width: 45px;

@@ -48,6 +48,9 @@ const Chat = () => {
       top: document.body.scrollHeight,
       behavior: "smooth",
     });
+    // setTimeout(() => {
+    //   textRef.current.focus();
+    // }, 400);
   }, [messages]);
 
   useEffect(() => {
@@ -123,7 +126,7 @@ const Chat = () => {
               onChange={(e) => setText(e.target.value)}
               placeholder="Type a message"
             />
-            <button>Send</button>
+            <button className="chatBtn">Send</button>
           </form>
         </>
       )}
