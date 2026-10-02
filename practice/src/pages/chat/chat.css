@@ -44,8 +44,10 @@
 }
 
 .chat-messages p {
-    width: 100%;
+    max-width: 100%;
     margin: 7px;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .chat-messages p strong {
@@ -54,11 +56,13 @@
     background-color: white;
     padding: 7px;
     font: normal 300 20px/1.5 sans-serif;
+    text-align: left;
 }
 
 .chat-messages p .meStrong {
-    background-color: azure;
+    background-color: rgb(182, 253, 253);
     float: right;
+    text-align: right;
 }
 
 form {

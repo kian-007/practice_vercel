@@ -12,7 +12,7 @@ const Chat = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-  const { lastEvent } = useSocket();
+  const { lastEvent, onlineUsers } = useSocket();
   const { isLoggedIn, loading } = useAuth();
   const navigate = useNavigate();
   const textRef = useRef(null);
@@ -94,6 +94,13 @@ const Chat = () => {
       <div className="chat-users">
         {users.map((user) => (
           <button key={user.id} onClick={() => setSelectedUser(user)}>
+            <span
+              style={{
+                color: onlineUsers.has(String(user.id)) ? "green" : "gray",
+              }}
+            >
+              ●
+            </span>{" "}
             {user.email}
           </button>
         ))}

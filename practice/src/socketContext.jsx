@@ -13,6 +13,7 @@ export const SocketProvider = ({ children }) => {
   const { isLoggedIn } = useAuth();
   const [lastEvent, setLastEvent] = useState(null);
   const [wsloading, setWsloading] = useState(true);
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -27,7 +28,24 @@ export const SocketProvider = ({ children }) => {
     };
 
     socket.onmessage = (event) => {
-      setLastEvent(JSON.parse(event.data));
+      const data = JSON.parse(event.data);
+      setLastEvent(data);
+
+      if (data.type === "online_users") {
+        setOnlineUsers(new Set(data.userIds.map(String)));
+      }
+
+      if (data.type === "user_online") {
+        setOnlineUsers((prev) => new Set(prev).add(String(data.userId)));
+      }
+
+      if (data.type === "user_offline") {
+        setOnlineUsers((prev) => {
+          const next = new Set(prev);
+          next.delete(String(data.userId));
+          return next;
+        });
+      }
     };
 
     // socket.onclose = () => console.log("WebSocket disconnected");
@@ -50,7 +68,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   return (
-    <SocketContext.Provider value={{ lastEvent, send, wsloading }}>
+    <SocketContext.Provider value={{ lastEvent, send, wsloading, onlineUsers }}>
       {children}
     </SocketContext.Provider>
   );

@@ -20,20 +20,23 @@ function getUserIdFromRequest(req) {
 }
 
 function addSocket(userId, socket) {
+  const isFirstConnection = !userSockets.has(userId);
   if (!userSockets.has(userId)) {
     userSockets.set(userId, new Set());
   }
   userSockets.get(userId).add(socket);
+  if (isFirstConnection) {
+    broadcast({ type: "user_online", userId });
+  }
 }
 
 function removeSocket(userId, socket) {
   const sockets = userSockets.get(userId);
   if (!sockets) return;
-
   sockets.delete(socket);
-
   if (sockets.size === 0) {
     userSockets.delete(userId);
+    broadcast({ type: "user_offline", userId });
   }
 }
 
@@ -55,6 +58,13 @@ function setupWebSocket(server) {
       JSON.stringify({
         type: "welcome",
         message: "Connected to WebSocket server",
+      }),
+    );
+
+    socket.send(
+      JSON.stringify({
+        type: "online_users",
+        userIds: Array.from(userSockets.keys()),
       }),
     );
 
