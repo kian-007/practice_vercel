@@ -50,6 +50,17 @@ router.post(
       data: result.rows[0],
     });
 
+    if (delivered) {
+      await pool.query(
+        `
+      UPDATE messages
+      SET delivered_at = NOW()
+      WHERE id = $1
+    `,
+        [message.id],
+      );
+    }
+
     res.status(201).json({
       success: true,
       message: result.rows[0],

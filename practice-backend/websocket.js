@@ -89,13 +89,17 @@ function broadcast(data) {
 
 function sendToUser(userId, data) {
   const sockets = userSockets.get(String(userId));
-  if (!sockets) return;
+  if (!sockets) return false;
+  let sent = false;
 
   sockets.forEach((socket) => {
     if (socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(data));
+      sent = true;
     }
   });
+
+  return sent;
 }
 
 module.exports = { setupWebSocket, broadcast, sendToUser };
