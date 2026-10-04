@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { pool } = require("../config/db");
 const { sendResetEmail } = require("../email");
@@ -78,7 +79,7 @@ router.post(
         { expiresIn: "15m" },
       );
       const refreshToken = jwt.sign(
-        { id: user.id, email: user.email },
+        { id: user.id, email: user.email, jti: crypto.randomUUID() },
         JWT_REFRESH_SECRET,
         {
           expiresIn: "7d",
@@ -386,7 +387,7 @@ router.post(
       { expiresIn: "15m" },
     );
     const newRefreshToken = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, jti: crypto.randomUUID() },
       JWT_REFRESH_SECRET,
       { expiresIn: "7d" },
     );
