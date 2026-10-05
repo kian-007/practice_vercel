@@ -1,7 +1,7 @@
 const app = require("./app");
 const http = require("http");
 const { setupWebSocket } = require("./websocket");
-const { initDatabase } = require("./db/init");
+const { initDatabase } = require("./db-init/init");
 
 // ---------- ساخت جدول و راه‌اندازی سرور ----------
 const PORT = process.env.PORT || 5000;
