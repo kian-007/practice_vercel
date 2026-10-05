@@ -301,6 +301,124 @@ describe("GET /admin/users", () => {
     const response = await request(app).get("/admin/users");
     expect(response.status).toBe(401);
   });
+
+  test("should use default pagination", async () => {
+    await pool.query("UPDATE users SET role = 'admin' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+    const agent = request.agent(app);
+    await agent.post("/login").send({
+      email: loginTestEmail,
+      password: loginTestPassword,
+    });
+    const response = await agent.get("/admin/users");
+    expect(response.status).toBe(200);
+    expect(response.body.page).toBe(1);
+    expect(response.body.limit).toBe(10);
+    expect(Array.isArray(response.body.results)).toBe(true);
+    await pool.query("UPDATE users SET role = 'user' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+  });
+
+  test("should support custom pagination", async () => {
+    await pool.query("UPDATE users SET role = 'admin' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+    const agent = request.agent(app);
+    await agent.post("/login").send({
+      email: loginTestEmail,
+      password: loginTestPassword,
+    });
+    const response = await agent.get("/admin/users?page=2&limit=5");
+    expect(response.status).toBe(200);
+    expect(response.body.page).toBe(2);
+    expect(response.body.limit).toBe(5);
+    expect(Array.isArray(response.body.results)).toBe(true);
+    await pool.query("UPDATE users SET role = 'user' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+  });
+
+  test("should sort users by email", async () => {
+    await pool.query("UPDATE users SET role = 'admin' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+    const agent = request.agent(app);
+    await agent.post("/login").send({
+      email: loginTestEmail,
+      password: loginTestPassword,
+    });
+    const response = await agent.get("/admin/users?sort=email&order=asc");
+    expect(response.status).toBe(200);
+    expect(response.body.results.length).toBeGreaterThan(1);
+    const emails = response.body.results.map((user) => user.email);
+    const sortedEmails = [...emails].sort();
+    expect(emails).toEqual(sortedEmails);
+    await pool.query("UPDATE users SET role = 'user' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+  });
+
+  test("should sort users by email in descending order", async () => {
+    await pool.query("UPDATE users SET role = 'admin' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+    const agent = request.agent(app);
+    await agent.post("/login").send({
+      email: loginTestEmail,
+      password: loginTestPassword,
+    });
+    const response = await agent.get("/admin/users?sort=email&order=desc");
+    expect(response.status).toBe(200);
+    expect(response.body.results.length).toBeGreaterThan(1);
+    const emails = response.body.results.map((user) => user.email);
+    const sortedEmails = [...emails].sort().reverse();
+    expect(emails).toEqual(sortedEmails);
+    await pool.query("UPDATE users SET role = 'user' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+  });
+
+  test("should fallback to asc when order is invalid", async () => {
+    await pool.query("UPDATE users SET role = 'admin' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+    const agent = request.agent(app);
+    await agent.post("/login").send({
+      email: loginTestEmail,
+      password: loginTestPassword,
+    });
+    const response = await agent.get("/admin/users?sort=email&order=random");
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body.results)).toBe(true);
+    const emails = response.body.results.map((user) => user.email);
+    const sortedEmails = [...emails].sort();
+    expect(emails).toEqual(sortedEmails);
+    await pool.query("UPDATE users SET role = 'user' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+  });
+
+  test("should filter users by role", async () => {
+    await pool.query("UPDATE users SET role = 'admin' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+    const agent = request.agent(app);
+    await agent.post("/login").send({
+      email: loginTestEmail,
+      password: loginTestPassword,
+    });
+    const response = await agent.get("/admin/users?role=admin");
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body.results)).toBe(true);
+    for (const user of response.body.results) {
+      expect(user.role).toBe("admin");
+    }
+    await pool.query("UPDATE users SET role = 'user' WHERE email = $1", [
+      loginTestEmail,
+    ]);
+  });
 });
 
 afterAll(async () => {
