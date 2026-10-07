@@ -17,7 +17,7 @@
         "ws": "^8.21.3"
     },
     "scripts": {
-        "dev": "nodemon -L index.js",
+        "dev": "nodemon --legacy-watch index.js",
         "start": "node --env-file=.env index.js",
         "test": "node --env-file=.env ./node_modules/vitest/vitest.mjs"
     },

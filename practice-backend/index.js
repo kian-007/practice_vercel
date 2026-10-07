@@ -10,7 +10,7 @@ setupWebSocket(server);
 
 (async () => {
   await initDatabase();
-
+  console.log("kir");
   // app.listen(5000, () => console.log("backend run at port:5000"));
   server.listen(PORT, () => {
     console.log(`Server running on ${PORT}`);
