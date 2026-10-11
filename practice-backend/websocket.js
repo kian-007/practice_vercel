@@ -1,6 +1,7 @@
 const WebSocket = require("ws");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie");
+const { pool } = require("./config/db");
 
 let wss;
 const userSockets = new Map();
@@ -45,11 +46,35 @@ function setupWebSocket(server) {
 
   wss.on("connection", (socket, req) => {
     const userId = getUserIdFromRequest(req);
-
     if (!userId) {
       socket.close(1008, "Unauthorized");
       return;
     }
+
+    socket.on("message", async (rawData) => {
+      try {
+        const data = JSON.parse(rawData);
+        if (data.type !== "message_delivered") return;
+        const result = await pool.query(
+          `UPDATE messages
+       SET delivered_at = COALESCE(delivered_at, NOW())
+       WHERE id = $1 AND receiver_id = $2
+       RETURNING id, sender_id, delivered_at`,
+          [data.messageId, userId],
+        );
+        if (result.rows.length === 0) return;
+        const message = result.rows[0];
+        sendToUser(message.sender_id, {
+          type: "message_delivered",
+          data: {
+            messageId: message.id,
+            delivered_at: message.delivered_at,
+          },
+        });
+      } catch (error) {
+        console.error("WebSocket message error:", error);
+      }
+    });
 
     addSocket(userId, socket);
     console.log(`User ${userId} connected`);
