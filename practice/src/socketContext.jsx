@@ -18,7 +18,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (!isLoggedIn) return;
-    // const socket = new WebSocket("ws://localhost:5000");
+    // const socket = new WebSocket("ws://10.31.0.129:5000");
     const socket = new WebSocket(API_URL.replace(/^http/, "ws"));
     socketRef.current = socket;
 
