@@ -44,8 +44,9 @@ router.post(
       `,
       [req.user.id, receiverId, content.trim()],
     );
+    const message = result.rows[0];
 
-    sendToUser(receiverId, {
+    const delivered = sendToUser(receiverId, {
       type: "new_message",
       data: result.rows[0],
     });
