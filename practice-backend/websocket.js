@@ -54,7 +54,9 @@ function setupWebSocket(server) {
     socket.on("message", async (rawData) => {
       try {
         const data = JSON.parse(rawData);
+
         if (data.type !== "message_delivered") return;
+
         const result = await pool.query(
           `UPDATE messages
        SET delivered_at = COALESCE(delivered_at, NOW())
@@ -62,7 +64,9 @@ function setupWebSocket(server) {
        RETURNING id, sender_id, delivered_at`,
           [data.messageId, userId],
         );
+
         if (result.rows.length === 0) return;
+
         const message = result.rows[0];
         sendToUser(message.sender_id, {
           type: "message_delivered",

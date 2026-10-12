@@ -17,12 +17,14 @@ const Chat = () => {
   const navigate = useNavigate();
   const textRef = useRef(null);
 
+  // Redirect to login if the user is not authenticated
   useEffect(() => {
     if (!loading && !isLoggedIn) {
       navigate("/login");
     }
   }, []);
 
+  // Fetch the list of chat users
   useEffect(() => {
     const loadUsers = async () => {
       const res = await fetchWithAuth(`${API_URL}/chat/users`);
@@ -32,6 +34,7 @@ const Chat = () => {
     loadUsers();
   }, []);
 
+  // Fetch message history when the selected user changes
   useEffect(() => {
     if (!selectedUser) return;
 
@@ -43,6 +46,7 @@ const Chat = () => {
     loadHistory();
   }, [selectedUser]);
 
+  // Scroll to the bottom whenever messages change
   useEffect(() => {
     window.scrollTo({
       top: document.body.scrollHeight,
@@ -53,11 +57,23 @@ const Chat = () => {
     // }, 400);
   }, [messages]);
 
+  // Add incoming messages from the selected user to the chat
   useEffect(() => {
     if (!lastEvent || lastEvent.type !== "new_message") return;
     if (!selectedUser || lastEvent.data.sender_id !== selectedUser.id) return;
-
     setMessages((prev) => [...prev, lastEvent.data]);
+  }, [lastEvent]);
+
+  // add handle delivered_at
+  useEffect(() => {
+    if (!lastEvent || lastEvent.type !== "message_delivered") return;
+    setMessages((prev) =>
+      prev.map((msg) =>
+        String(msg.id) === String(lastEvent.data.messageId)
+          ? { ...msg, delivered_at: lastEvent.data.delivered_at }
+          : msg,
+      ),
+    );
   }, [lastEvent]);
 
   const handleSend = async (e) => {
@@ -120,7 +136,12 @@ const Chat = () => {
                 </p>
               ) : (
                 <p key={msg.id}>
-                  <strong className="meStrong">Me: {msg.content}</strong>
+                  <strong className="meStrong">
+                    Me: {msg.content}{" "}
+                    <span style={{ fontSize: "small" }}>
+                      {msg.delivered_at ? "✓✓" : "✓"}
+                    </span>
+                  </strong>{" "}
                 </p>
               ),
             )}

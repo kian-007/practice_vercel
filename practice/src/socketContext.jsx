@@ -31,6 +31,15 @@ export const SocketProvider = ({ children }) => {
       const data = JSON.parse(event.data);
       setLastEvent(data);
 
+      if (data.type === "new_message") {
+        socket.send(
+          JSON.stringify({
+            type: "message_delivered",
+            messageId: data.data.id,
+          }),
+        );
+      }
+
       if (data.type === "online_users") {
         setOnlineUsers(new Set(data.userIds.map(String)));
       }
