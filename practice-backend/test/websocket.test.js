@@ -15,6 +15,25 @@ function connect(token) {
   });
 }
 
+function waitForMessage(socket, type, userId) {
+  return new Promise((resolve, reject) => {
+    function onMessage(rawData) {
+      const data = JSON.parse(rawData);
+
+      if (
+        data.type === type &&
+        (userId === undefined || data.userId === userId)
+      ) {
+        socket.off("message", onMessage);
+        resolve(data);
+      }
+    }
+
+    socket.on("message", onMessage);
+    socket.once("error", reject);
+  });
+}
+
 describe("WebSocket authentication", () => {
   beforeAll(async () => {
     server = http.createServer();
@@ -58,6 +77,38 @@ describe("WebSocket authentication", () => {
     });
     expect(code).toBe(1008);
   });
+
+  test("should broadcast user_offline when user disconnects", async () => {
+    const token1 = jwt.sign({ id: 1 }, process.env.JWT_SECRET);
+    const token2 = jwt.sign({ id: 2 }, process.env.JWT_SECRET);
+
+    const user1 = connect(token1);
+    const user2 = connect(token2);
+
+    try {
+      // منتظر اتصال کامل هر دو کاربر می‌مانیم
+      await Promise.all([
+        waitForMessage(user1, "welcome"),
+        waitForMessage(user2, "welcome"),
+      ]);
+      // قبل از قطع اتصال، منتظر رویداد آفلاین می‌شویم
+      const offlinePromise = waitForMessage(user2, "user_offline", "1");
+      user1.close();
+      const message = await offlinePromise;
+
+      expect(message.type).toBe("user_offline");
+      expect(message.userId).toBe("1");
+    } finally {
+      if (user1.readyState !== WebSocket.CLOSED) {
+        user1.terminate();
+      }
+
+      if (user2.readyState !== WebSocket.CLOSED) {
+        user2.terminate();
+      }
+    }
+  });
+
   afterAll(async () => {
     wss.clients.forEach((socket) => socket.terminate());
     await new Promise((resolve) => {
