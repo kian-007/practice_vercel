@@ -152,6 +152,12 @@ const Chat = () => {
               ref={textRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend(e);
+                }
+              }}
               placeholder="Type a message"
             />
             <button className="chatBtn">Send</button>
