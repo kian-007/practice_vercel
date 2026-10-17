@@ -1,5 +1,4 @@
 const express = require("express");
-const { pool } = require("../config/db");
 const { requireAuth } = require("../middleware/auth");
 const { asyncHandler } = require("../middleware/asyncHandler");
 const { messageLimiter } = require("../middleware/rateLimiter");
