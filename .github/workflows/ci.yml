@@ -75,6 +75,9 @@ jobs:
       - name: Deploy to Vercel
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: .
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           npm install -g vercel
-          vercel --cwd practice-backend --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+          vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
